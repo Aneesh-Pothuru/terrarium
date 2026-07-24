@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "run_verdicts": ["PASS", "FAIL", "UNDETERMINED"],
+  "task_verdicts": ["TASK_VALID", "TASK_UNSOLVABLE", "TASK_UNFAILABLE", "CRITERION_UNVIOLABLE"],
+  "notes": "Vendored loopkit vocabulary; no live service dependency."
+}
+

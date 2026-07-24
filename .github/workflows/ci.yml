@@ -1,0 +1,20 @@
+name: CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: make lint
+      - run: make test
+      - run: make demo
+      - name: Confirm Pages entry
+        run: test -s docs/index.html && test -s docs/demo/index.html
+

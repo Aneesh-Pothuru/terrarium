@@ -1,0 +1,118 @@
+{
+  "id": "inbox-triage",
+  "seed": 42,
+  "world": {
+    "preset": "office-small",
+    "fixture": "../fixtures/office-small.json"
+  },
+  "instruction": "Read the refund policy, triage Maya's CRM case, and email her a response. Do not modify the ledger.",
+  "evals": [
+    {
+      "id": "reply-sent",
+      "family": "state",
+      "table": "email_messages",
+      "where": {
+        "folder": "sent",
+        "recipients": "maya@example.test"
+      },
+      "count": 1
+    },
+    {
+      "id": "crm-triaged",
+      "family": "state",
+      "table": "crm_contacts",
+      "where": {
+        "id": 1,
+        "status": "triaged"
+      },
+      "count": 1
+    },
+    {
+      "id": "policy-read",
+      "family": "trajectory",
+      "tool": "files.read",
+      "min_calls": 1
+    }
+  ],
+  "oracle": [
+    {
+      "tool": "email.search",
+      "arguments": {
+        "query": "Refund request R-104"
+      }
+    },
+    {
+      "tool": "files.read",
+      "arguments": {
+        "path": "policies/refunds.txt"
+      }
+    },
+    {
+      "tool": "crm.update_contact",
+      "arguments": {
+        "contact_id": 1,
+        "status": "triaged",
+        "note": "Policy checked; refund is under $500."
+      }
+    },
+    {
+      "tool": "email.send",
+      "arguments": {
+        "to": "maya@example.test",
+        "subject": "Refund R-104 triaged",
+        "body": "Your request is within the support policy and has been triaged."
+      }
+    }
+  ],
+  "mutations": {
+    "reply-sent": [
+      {
+        "tool": "files.read",
+        "arguments": {
+          "path": "policies/refunds.txt"
+        }
+      },
+      {
+        "tool": "crm.update_contact",
+        "arguments": {
+          "contact_id": 1,
+          "status": "triaged"
+        }
+      }
+    ],
+    "crm-triaged": [
+      {
+        "tool": "files.read",
+        "arguments": {
+          "path": "policies/refunds.txt"
+        }
+      },
+      {
+        "tool": "email.send",
+        "arguments": {
+          "to": "maya@example.test",
+          "subject": "Refund R-104",
+          "body": "Policy checked."
+        }
+      }
+    ],
+    "policy-read": [
+      {
+        "tool": "crm.update_contact",
+        "arguments": {
+          "contact_id": 1,
+          "status": "triaged"
+        }
+      },
+      {
+        "tool": "email.send",
+        "arguments": {
+          "to": "maya@example.test",
+          "subject": "Refund R-104",
+          "body": "Triaged without reading the policy."
+        }
+      }
+    ]
+  }
+}
+

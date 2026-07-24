@@ -1,0 +1,393 @@
+[
+  {
+    "after": {},
+    "before": {},
+    "cost_usd": 0.0,
+    "evaluations": [
+      {
+        "criterion_id": "reply-sent",
+        "detail": "matched 1 row(s); expected 1",
+        "family": "state",
+        "verdict": "PASS"
+      },
+      {
+        "criterion_id": "crm-triaged",
+        "detail": "matched 0 row(s); expected 1",
+        "family": "state",
+        "verdict": "FAIL"
+      },
+      {
+        "criterion_id": "policy-read",
+        "detail": "observed 0 call(s); required 1",
+        "family": "trajectory",
+        "verdict": "FAIL"
+      }
+    ],
+    "latency_ms": 430,
+    "metadata": {
+      "recording": "deliberate failure fixture"
+    },
+    "model": "deliberate failure \u00b7 recorded",
+    "provider_fingerprint": "recorded-demo-v1",
+    "run_id": "inbox-triage-failure",
+    "seed": 42,
+    "task_hash": "inbox-triage-demo-v1",
+    "task_id": "inbox-triage",
+    "tokens": 201,
+    "trace": [
+      {
+        "app": "email",
+        "kind": "tool",
+        "operation": "search",
+        "payload": {
+          "arguments": {
+            "query": "refund"
+          }
+        },
+        "seq": 1
+      },
+      {
+        "app": "email",
+        "kind": "read",
+        "operation": "search",
+        "payload": {
+          "count": 1,
+          "limit": 20,
+          "query": "refund"
+        },
+        "seq": 2
+      },
+      {
+        "app": "email",
+        "kind": "tool",
+        "operation": "send",
+        "payload": {
+          "arguments": {
+            "to": "maya@example.test"
+          }
+        },
+        "seq": 3
+      },
+      {
+        "app": "email",
+        "kind": "write",
+        "operation": "send",
+        "payload": {
+          "id": 2,
+          "to": "maya@example.test"
+        },
+        "seq": 4
+      }
+    ],
+    "verdict": "FAIL",
+    "world_diff": {
+      "email_messages": {
+        "added": [
+          {
+            "folder": "sent",
+            "recipients": "maya@example.test"
+          }
+        ],
+        "removed": []
+      }
+    }
+  },
+  {
+    "after": {},
+    "before": {},
+    "cost_usd": 0.0,
+    "evaluations": [
+      {
+        "criterion_id": "reply-sent",
+        "detail": "matched 1 row(s); expected 1",
+        "family": "state",
+        "verdict": "PASS"
+      },
+      {
+        "criterion_id": "crm-triaged",
+        "detail": "matched 1 row(s); expected 1",
+        "family": "state",
+        "verdict": "PASS"
+      },
+      {
+        "criterion_id": "policy-read",
+        "detail": "observed 1 call(s); required 1",
+        "family": "trajectory",
+        "verdict": "PASS"
+      }
+    ],
+    "latency_ms": 1180,
+    "metadata": {
+      "recording": "bundled deterministic fixture"
+    },
+    "model": "gemini-2.5-flash \u00b7 recorded",
+    "provider_fingerprint": "recorded-demo-v1",
+    "run_id": "inbox-triage-flash",
+    "seed": 42,
+    "task_hash": "inbox-triage-demo-v1",
+    "task_id": "inbox-triage",
+    "tokens": 812,
+    "trace": [
+      {
+        "app": "email",
+        "kind": "tool",
+        "operation": "search",
+        "payload": {
+          "arguments": {
+            "query": "Refund request R-104"
+          }
+        },
+        "seq": 1
+      },
+      {
+        "app": "email",
+        "kind": "read",
+        "operation": "search",
+        "payload": {
+          "count": 1,
+          "limit": 20,
+          "query": "Refund request R-104"
+        },
+        "seq": 2
+      },
+      {
+        "app": "files",
+        "kind": "tool",
+        "operation": "read",
+        "payload": {
+          "arguments": {
+            "path": "policies/refunds.txt"
+          }
+        },
+        "seq": 3
+      },
+      {
+        "app": "files",
+        "kind": "read",
+        "operation": "read",
+        "payload": {
+          "path": "policies/refunds.txt"
+        },
+        "seq": 4
+      },
+      {
+        "app": "crm",
+        "kind": "tool",
+        "operation": "update_contact",
+        "payload": {
+          "arguments": {
+            "contact_id": 1,
+            "status": "triaged"
+          }
+        },
+        "seq": 5
+      },
+      {
+        "app": "crm",
+        "kind": "write",
+        "operation": "update_contact",
+        "payload": {
+          "id": 1,
+          "status": "triaged"
+        },
+        "seq": 6
+      },
+      {
+        "app": "email",
+        "kind": "tool",
+        "operation": "send",
+        "payload": {
+          "arguments": {
+            "to": "maya@example.test"
+          }
+        },
+        "seq": 7
+      },
+      {
+        "app": "email",
+        "kind": "write",
+        "operation": "send",
+        "payload": {
+          "id": 2,
+          "to": "maya@example.test"
+        },
+        "seq": 8
+      }
+    ],
+    "verdict": "PASS",
+    "world_diff": {
+      "crm_contacts": {
+        "added": [
+          {
+            "id": 1,
+            "status": "triaged"
+          }
+        ],
+        "removed": [
+          {
+            "id": 1,
+            "status": "open"
+          }
+        ]
+      },
+      "email_messages": {
+        "added": [
+          {
+            "folder": "sent",
+            "recipients": "maya@example.test"
+          }
+        ],
+        "removed": []
+      }
+    }
+  },
+  {
+    "after": {},
+    "before": {},
+    "cost_usd": 0.0,
+    "evaluations": [
+      {
+        "criterion_id": "reply-sent",
+        "detail": "matched 1 row(s); expected 1",
+        "family": "state",
+        "verdict": "PASS"
+      },
+      {
+        "criterion_id": "crm-triaged",
+        "detail": "matched 1 row(s); expected 1",
+        "family": "state",
+        "verdict": "PASS"
+      },
+      {
+        "criterion_id": "policy-read",
+        "detail": "observed 1 call(s); required 1",
+        "family": "trajectory",
+        "verdict": "PASS"
+      }
+    ],
+    "latency_ms": 1540,
+    "metadata": {
+      "recording": "bundled deterministic fixture"
+    },
+    "model": "llama-3.3-70b \u00b7 recorded",
+    "provider_fingerprint": "recorded-demo-v1",
+    "run_id": "inbox-triage-oss",
+    "seed": 42,
+    "task_hash": "inbox-triage-demo-v1",
+    "task_id": "inbox-triage",
+    "tokens": 954,
+    "trace": [
+      {
+        "app": "files",
+        "kind": "tool",
+        "operation": "read",
+        "payload": {
+          "arguments": {
+            "path": "policies/refunds.txt"
+          }
+        },
+        "seq": 1
+      },
+      {
+        "app": "files",
+        "kind": "read",
+        "operation": "read",
+        "payload": {
+          "path": "policies/refunds.txt"
+        },
+        "seq": 2
+      },
+      {
+        "app": "email",
+        "kind": "tool",
+        "operation": "search",
+        "payload": {
+          "arguments": {
+            "query": "R-104"
+          }
+        },
+        "seq": 3
+      },
+      {
+        "app": "email",
+        "kind": "read",
+        "operation": "search",
+        "payload": {
+          "count": 1,
+          "limit": 20,
+          "query": "R-104"
+        },
+        "seq": 4
+      },
+      {
+        "app": "email",
+        "kind": "tool",
+        "operation": "send",
+        "payload": {
+          "arguments": {
+            "to": "maya@example.test"
+          }
+        },
+        "seq": 5
+      },
+      {
+        "app": "email",
+        "kind": "write",
+        "operation": "send",
+        "payload": {
+          "id": 2,
+          "to": "maya@example.test"
+        },
+        "seq": 6
+      },
+      {
+        "app": "crm",
+        "kind": "tool",
+        "operation": "update_contact",
+        "payload": {
+          "arguments": {
+            "contact_id": 1,
+            "status": "triaged"
+          }
+        },
+        "seq": 7
+      },
+      {
+        "app": "crm",
+        "kind": "write",
+        "operation": "update_contact",
+        "payload": {
+          "id": 1,
+          "status": "triaged"
+        },
+        "seq": 8
+      }
+    ],
+    "verdict": "PASS",
+    "world_diff": {
+      "crm_contacts": {
+        "added": [
+          {
+            "id": 1,
+            "status": "triaged"
+          }
+        ],
+        "removed": [
+          {
+            "id": 1,
+            "status": "open"
+          }
+        ]
+      },
+      "email_messages": {
+        "added": [
+          {
+            "folder": "sent",
+            "recipients": "maya@example.test"
+          }
+        ],
+        "removed": []
+      }
+    }
+  }
+]

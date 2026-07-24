@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "terrarium"
+version = "0.1.0"
+description = "A deterministic, observable sandbox of simulated workplace apps for agent evaluation."
+readme = "README.md"
+requires-python = ">=3.12"
+license = {file = "LICENSE"}
+authors = [{name = "Aneesh Pothuru"}]
+dependencies = []
+
+[project.scripts]
+terrarium = "terrarium.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+terrarium = ["data/recorded/*.json"]

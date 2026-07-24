@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://loopkit.local/run.schema.json",
+  "title": "loopkit Run",
+  "type": "object",
+  "required": ["run_id", "task_id", "task_hash", "model", "seed", "trace", "evaluations", "verdict"],
+  "properties": {
+    "run_id": {"type": "string"},
+    "task_id": {"type": "string"},
+    "task_hash": {"type": "string"},
+    "model": {"type": "string"},
+    "provider_fingerprint": {"type": "string"},
+    "seed": {"type": "integer"},
+    "trace": {"type": "array", "items": {"$ref": "trace.schema.json"}},
+    "before": {"type": "object"},
+    "after": {"type": "object"},
+    "world_diff": {"type": "object"},
+    "evaluations": {"type": "array"},
+    "verdict": {"enum": ["PASS", "FAIL", "UNDETERMINED"]},
+    "tokens": {"type": "integer"},
+    "latency_ms": {"type": "integer"},
+    "cost_usd": {"type": "number"}
+  }
+}
+

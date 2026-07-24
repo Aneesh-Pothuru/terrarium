@@ -1,0 +1,60 @@
+{
+  "email_messages": [
+    {
+      "id": 1,
+      "folder": "inbox",
+      "sender": "maya@example.test",
+      "recipients": "support@example.test",
+      "subject": "Refund request R-104",
+      "body": "Please triage refund R-104 and let me know the policy.",
+      "read": 0
+    }
+  ],
+  "calendar_events": [
+    {
+      "id": 1,
+      "title": "Support handoff",
+      "start": "2026-07-24T16:00:00Z",
+      "end": "2026-07-24T16:30:00Z",
+      "status": "active"
+    }
+  ],
+  "files": [
+    {
+      "path": "policies/refunds.txt",
+      "content": "Refunds below $500 may be triaged by support.",
+      "readable": 1
+    },
+    {
+      "path": "private/payroll.txt",
+      "content": "not part of the task",
+      "readable": 0
+    }
+  ],
+  "chat_messages": [
+    {
+      "id": 1,
+      "channel": "support",
+      "sender": "lead",
+      "body": "Use the policy file before updating a refund case."
+    }
+  ],
+  "crm_contacts": [
+    {
+      "id": 1,
+      "name": "Maya",
+      "email": "maya@example.test",
+      "status": "open",
+      "note": "Refund R-104"
+    }
+  ],
+  "ledger_entries": [
+    {
+      "id": 104,
+      "contact_id": 1,
+      "amount": 482.1,
+      "status": "pending"
+    }
+  ]
+}
+

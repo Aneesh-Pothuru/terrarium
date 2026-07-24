@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Replay · inbox-triage-flash</title><style>
+body{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#07130f;color:#dff7e9;margin:0}
+main{max-width:1180px;margin:auto;padding:32px}.hero{border:1px solid #2a6b50;background:#0c2018;padding:24px}
+h1,h2{color:#8ff0bd}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.card{border:1px solid #24503f;background:#0a1a14;padding:16px}.PASS{color:#76e6a7}.FAIL{color:#ff8f8f}
+.UNDETERMINED{color:#ffd36e}table{border-collapse:collapse;width:100%;font-size:13px}td,th{border:1px solid #24503f;padding:7px;text-align:left;vertical-align:top}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#b9d8c7}.muted{color:#8eac9c}.metric{font-size:28px;color:#fff}
+</style></head>
+<body><main><section class="hero"><p class="muted">TERRARIUM · SEALED WORLD REPORT</p>
+<h1>Replay · inbox-triage-flash</h1>
+<p>Identical task/world/grader hash across all runs. Replay is keyless and network-free.</p>
+<p>Runs <strong>1</strong> · abstention rate <strong>0.0%</strong></p>
+</section><div class="grid">
+    <section class="card">
+      <h2>gemini-2.5-flash · recorded</h2>
+      <p><span class="metric PASS">PASS</span><br>
+      <span class="muted">inbox-triage-flash · seed 42 ·
+      $0.00 · 1180 ms</span></p>
+      <h3>Criteria</h3>
+      <table><tr><th>ID</th><th>family</th><th>verdict</th><th>evidence</th></tr><tr><td>reply-sent</td><td>state</td><td class='PASS'>PASS</td><td>matched 1 row(s); expected 1</td></tr><tr><td>crm-triaged</td><td>state</td><td class='PASS'>PASS</td><td>matched 1 row(s); expected 1</td></tr><tr><td>policy-read</td><td>trajectory</td><td class='PASS'>PASS</td><td>observed 1 call(s); required 1</td></tr></table>
+      <h3>Timeline</h3><pre>01 tool  email.search {&quot;arguments&quot;: {&quot;query&quot;: &quot;Refund request R-104&quot;}}
+02 read  email.search {&quot;count&quot;: 1, &quot;limit&quot;: 20, &quot;query&quot;: &quot;Refund request R-104&quot;}
+03 tool  files.read {&quot;arguments&quot;: {&quot;path&quot;: &quot;policies/refunds.txt&quot;}}
+04 read  files.read {&quot;path&quot;: &quot;policies/refunds.txt&quot;}
+05 tool  crm.update_contact {&quot;arguments&quot;: {&quot;contact_id&quot;: 1, &quot;status&quot;: &quot;triaged&quot;}}
+06 write crm.update_contact {&quot;id&quot;: 1, &quot;status&quot;: &quot;triaged&quot;}
+07 tool  email.send {&quot;arguments&quot;: {&quot;to&quot;: &quot;maya@example.test&quot;}}
+08 write email.send {&quot;id&quot;: 2, &quot;to&quot;: &quot;maya@example.test&quot;}</pre>
+      <h3>World diff</h3><pre>{
+  &quot;crm_contacts&quot;: {
+    &quot;added&quot;: [
+      {
+        &quot;id&quot;: 1,
+        &quot;status&quot;: &quot;triaged&quot;
+      }
+    ],
+    &quot;removed&quot;: [
+      {
+        &quot;id&quot;: 1,
+        &quot;status&quot;: &quot;open&quot;
+      }
+    ]
+  },
+  &quot;email_messages&quot;: {
+    &quot;added&quot;: [
+      {
+        &quot;folder&quot;: &quot;sent&quot;,
+        &quot;recipients&quot;: &quot;maya@example.test&quot;
+      }
+    ],
+    &quot;removed&quot;: []
+  }
+}</pre>
+    </section>
+    </div>
+<p class="muted">Generated deterministically from vendored run bundles.</p>
+</main></body></html>

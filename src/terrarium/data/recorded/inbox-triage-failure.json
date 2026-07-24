@@ -1,0 +1,30 @@
+{
+  "after": {},
+  "before": {},
+  "cost_usd": 0.0,
+  "evaluations": [
+    {"criterion_id": "reply-sent", "detail": "matched 1 row(s); expected 1", "family": "state", "verdict": "PASS"},
+    {"criterion_id": "crm-triaged", "detail": "matched 0 row(s); expected 1", "family": "state", "verdict": "FAIL"},
+    {"criterion_id": "policy-read", "detail": "observed 0 call(s); required 1", "family": "trajectory", "verdict": "FAIL"}
+  ],
+  "latency_ms": 430,
+  "metadata": {"recording": "deliberate failure fixture"},
+  "model": "deliberate failure · recorded",
+  "provider_fingerprint": "recorded-demo-v1",
+  "run_id": "inbox-triage-failure",
+  "seed": 42,
+  "task_hash": "inbox-triage-demo-v1",
+  "task_id": "inbox-triage",
+  "tokens": 201,
+  "trace": [
+    {"app": "email", "kind": "tool", "operation": "search", "payload": {"arguments": {"query": "refund"}}, "seq": 1},
+    {"app": "email", "kind": "read", "operation": "search", "payload": {"count": 1, "limit": 20, "query": "refund"}, "seq": 2},
+    {"app": "email", "kind": "tool", "operation": "send", "payload": {"arguments": {"to": "maya@example.test"}}, "seq": 3},
+    {"app": "email", "kind": "write", "operation": "send", "payload": {"id": 2, "to": "maya@example.test"}, "seq": 4}
+  ],
+  "verdict": "FAIL",
+  "world_diff": {
+    "email_messages": {"added": [{"folder": "sent", "recipients": "maya@example.test"}], "removed": []}
+  }
+}
+

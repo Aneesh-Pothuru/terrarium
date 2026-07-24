@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://loopkit.local/trace.schema.json",
+  "title": "loopkit TraceEvent",
+  "type": "object",
+  "required": ["seq", "kind", "app", "operation", "payload"],
+  "properties": {
+    "seq": {"type": "integer", "minimum": 1},
+    "kind": {"enum": ["tool", "read", "write", "error"]},
+    "app": {"type": "string"},
+    "operation": {"type": "string"},
+    "payload": {"type": "object"}
+  }
+}
+

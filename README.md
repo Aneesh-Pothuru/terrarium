@@ -19,6 +19,8 @@ single static page shows tool timelines, before/after state diffs, criterion
 results, and a side-by-side comparison. It performs no network calls and
 requires no API key.
 
+![TERRARIUM three-run replay report](docs/assets/demo.jpg)
+
 For an installed checkout, the equivalent command is:
 
 ```bash
@@ -76,4 +78,3 @@ depends on another deployed service.
 - `make lint` performs dependency-free AST, whitespace, and JSON checks.
 
 The authoritative build brief is copied to [docs/BRIEF.md](docs/BRIEF.md).
-

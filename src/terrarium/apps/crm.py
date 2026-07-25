@@ -41,9 +41,11 @@ class CrmApp(AppModule):
         return rows
 
     def ledger_update(self, entry_id: int, status: str) -> dict:
-        self.world.execute(
+        cursor = self.world.execute(
             "UPDATE ledger_entries SET status=? WHERE id=?", (status, entry_id)
         )
+        if cursor.rowcount != 1:
+            raise KeyError(entry_id)
         result = {"id": entry_id, "status": status}
         self.log_write("ledger_update", result)
         return result

@@ -1,7 +1,7 @@
 PYTHON ?= python3
 ENV = PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1
 
-.PHONY: demo test lint reproduce-model-comparison reproduce-replay
+.PHONY: demo test lint service reproduce-model-comparison reproduce-replay
 
 demo:
 	$(ENV) $(PYTHON) -m terrarium demo --output docs/demo/index.html
@@ -12,9 +12,12 @@ test:
 lint:
 	$(ENV) $(PYTHON) scripts/lint.py
 
+service:
+	$(ENV) $(PYTHON) -m terrarium service \
+		--task examples/tasks/inbox-triage.yaml --data-dir work/service
+
 reproduce-model-comparison:
 	$(ENV) $(PYTHON) -m terrarium demo --output docs/demo/index.html --json-output docs/demo/model-comparison.json
 
 reproduce-replay:
 	$(ENV) $(PYTHON) -m terrarium replay examples/recorded/inbox-triage-flash.json --output docs/demo/replay.html
-

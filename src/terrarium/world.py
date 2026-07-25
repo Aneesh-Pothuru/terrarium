@@ -48,6 +48,184 @@ CREATE TABLE trace(
 );
 """
 
+TOOL_DEFINITIONS: list[dict[str, Any]] = [
+    {
+        "name": "email.search",
+        "description": "Search simulated email by subject, body, or sender.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string"},
+                "limit": {"type": "integer", "minimum": 1, "maximum": 100},
+            },
+            "required": ["query"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "email.send",
+        "description": "Send an email inside the simulated world.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "to": {"type": "string"},
+                "subject": {"type": "string"},
+                "body": {"type": "string"},
+            },
+            "required": ["to", "subject", "body"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "email.mark_read",
+        "description": "Mark a simulated email message as read.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"message_id": {"type": "integer", "minimum": 1}},
+            "required": ["message_id"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "calendar.list",
+        "description": "List simulated calendar events by status.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"status": {"type": "string"}},
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "calendar.create",
+        "description": "Create an event in the simulated calendar.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "title": {"type": "string"},
+                "start": {"type": "string"},
+                "end": {"type": "string"},
+            },
+            "required": ["title", "start", "end"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "calendar.cancel",
+        "description": "Cancel an existing simulated calendar event.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"event_id": {"type": "integer", "minimum": 1}},
+            "required": ["event_id"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "files.search",
+        "description": "Search paths in the simulated file store.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"query": {"type": "string"}},
+            "required": ["query"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "files.read",
+        "description": "Read a file from the simulated file store.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"path": {"type": "string"}},
+            "required": ["path"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "files.write",
+        "description": "Create or replace a file in the simulated file store.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "path": {"type": "string"},
+                "content": {"type": "string"},
+            },
+            "required": ["path", "content"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "chat.search",
+        "description": "Search simulated chat messages.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string"},
+                "channel": {"type": ["string", "null"]},
+            },
+            "required": ["query"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "chat.send",
+        "description": "Send a message inside simulated chat.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "channel": {"type": "string"},
+                "body": {"type": "string"},
+            },
+            "required": ["channel", "body"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "crm.get_contact",
+        "description": "Read one contact from the simulated CRM.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"contact_id": {"type": "integer", "minimum": 1}},
+            "required": ["contact_id"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "crm.update_contact",
+        "description": "Update status or note for a simulated CRM contact.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "contact_id": {"type": "integer", "minimum": 1},
+                "status": {"type": ["string", "null"]},
+                "note": {"type": ["string", "null"]},
+            },
+            "required": ["contact_id"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "ledger.query",
+        "description": "Query the read/write ledger attached to the simulated CRM.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"contact_id": {"type": ["integer", "null"], "minimum": 1}},
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "ledger.update",
+        "description": "Update a simulated ledger entry status.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "entry_id": {"type": "integer", "minimum": 1},
+                "status": {"type": "string"},
+            },
+            "required": ["entry_id", "status"],
+            "additionalProperties": False,
+        },
+    },
+]
+
 
 def create_snapshot(fixture: dict[str, list[dict]], path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -152,23 +330,10 @@ class World:
             raise
 
     def list_tools(self) -> list[str]:
-        return [
-            "email.search",
-            "email.send",
-            "email.mark_read",
-            "calendar.list",
-            "calendar.create",
-            "calendar.cancel",
-            "files.search",
-            "files.read",
-            "files.write",
-            "chat.search",
-            "chat.send",
-            "crm.get_contact",
-            "crm.update_contact",
-            "ledger.query",
-            "ledger.update",
-        ]
+        return [tool["name"] for tool in TOOL_DEFINITIONS]
+
+    def tool_definitions(self) -> list[dict[str, Any]]:
+        return TOOL_DEFINITIONS
 
 
 def state_diff(
@@ -184,4 +349,3 @@ def state_diff(
         if added or removed:
             diff[table] = {"added": added, "removed": removed}
     return diff
-

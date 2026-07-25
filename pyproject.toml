@@ -14,6 +14,7 @@ dependencies = []
 
 [project.scripts]
 terrarium = "terrarium.cli:main"
+terrarium-service = "terrarium.service:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

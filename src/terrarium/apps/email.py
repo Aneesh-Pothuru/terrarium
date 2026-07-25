@@ -31,7 +31,11 @@ class EmailApp(AppModule):
         return result
 
     def mark_read(self, message_id: int) -> dict:
-        self.world.execute("UPDATE email_messages SET read=1 WHERE id=?", (message_id,))
+        cursor = self.world.execute(
+            "UPDATE email_messages SET read=1 WHERE id=?", (message_id,)
+        )
+        if cursor.rowcount != 1:
+            raise KeyError(message_id)
         result = {"id": message_id, "read": True}
         self.log_write("mark_read", result)
         return result

@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 
 from .report import render_report
 from .runner import load_run, run_task, save_run
+from .service import ServiceConfig, serve_http
 from .stdio import serve
 from .task import TaskSpec
 from .validity import validate_task
@@ -68,6 +70,24 @@ def _serve(args: argparse.Namespace) -> int:
     return 0
 
 
+def _service(args: argparse.Namespace) -> int:
+    config = ServiceConfig(
+        host=args.host,
+        port=args.port,
+        max_body_bytes=args.max_body_bytes,
+        max_actions=args.max_actions,
+        max_sessions=args.max_sessions,
+        cors_origin=args.cors_origin,
+    )
+    serve_http(
+        TaskSpec.load(args.task),
+        args.data_dir,
+        config=config,
+        allow_remote=args.allow_remote,
+    )
+    return 0
+
+
 def parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(prog="terrarium")
     commands = root.add_subparsers(dest="command", required=True)
@@ -104,6 +124,38 @@ def parser() -> argparse.ArgumentParser:
     stdio.add_argument("--task", required=True)
     stdio.add_argument("--stdio", action="store_true")
     stdio.set_defaults(handler=_serve)
+
+    service = commands.add_parser(
+        "service", help="run the persistent loopback HTTP service"
+    )
+    service.add_argument("--task", required=True)
+    service.add_argument(
+        "--data-dir", default=os.environ.get("TERRARIUM_DATA_DIR", "work/service")
+    )
+    service.add_argument(
+        "--host", default=os.environ.get("TERRARIUM_HOST", "127.0.0.1")
+    )
+    service.add_argument(
+        "--port", type=int, default=int(os.environ.get("TERRARIUM_PORT", "8700"))
+    )
+    service.add_argument(
+        "--max-body-bytes",
+        type=int,
+        default=int(os.environ.get("TERRARIUM_MAX_BODY_BYTES", str(64 * 1024))),
+    )
+    service.add_argument(
+        "--max-actions",
+        type=int,
+        default=int(os.environ.get("TERRARIUM_MAX_ACTIONS", "100")),
+    )
+    service.add_argument(
+        "--max-sessions",
+        type=int,
+        default=int(os.environ.get("TERRARIUM_MAX_SESSIONS", "1000")),
+    )
+    service.add_argument("--cors-origin", default=os.environ.get("TERRARIUM_CORS_ORIGIN"))
+    service.add_argument("--allow-remote", action="store_true")
+    service.set_defaults(handler=_service)
     return root
 
 

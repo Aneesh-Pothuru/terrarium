@@ -81,15 +81,21 @@ class TerrariumTests(unittest.TestCase):
 
     def test_stdio_lists_and_calls_tools(self) -> None:
         requests = io.StringIO(
+            '{"jsonrpc":"2.0","id":0,"method":"initialize","params":{}}\n'
             '{"jsonrpc":"2.0","id":1,"method":"tools/list"}\n'
             '{"jsonrpc":"2.0","id":2,"method":"tools/call",'
             '"params":{"name":"email.search","arguments":{"query":"refund"}}}\n'
+            '{"jsonrpc":"2.0","id":3,"method":"terrarium/state"}\n'
         )
         responses = io.StringIO()
         serve(TaskSpec.load(TASK), requests, responses)
         payloads = [json.loads(line) for line in responses.getvalue().splitlines()]
-        self.assertEqual(len(payloads[0]["result"]["tools"]), 15)
-        self.assertEqual(len(payloads[1]["result"]), 1)
+        self.assertEqual(payloads[0]["result"]["serverInfo"]["name"], "terrarium")
+        self.assertEqual(len(payloads[1]["result"]["tools"]), 15)
+        self.assertEqual(
+            len(payloads[2]["result"]["structuredContent"]["result"]), 1
+        )
+        self.assertIn("email_messages", payloads[3]["result"]["state"])
 
 
 if __name__ == "__main__":

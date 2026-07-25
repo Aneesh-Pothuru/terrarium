@@ -23,9 +23,11 @@ class CalendarApp(AppModule):
         return result
 
     def cancel(self, event_id: int) -> dict:
-        self.world.execute(
+        cursor = self.world.execute(
             "UPDATE calendar_events SET status='cancelled' WHERE id=?", (event_id,)
         )
+        if cursor.rowcount != 1:
+            raise KeyError(event_id)
         result = {"id": event_id, "status": "cancelled"}
         self.log_write("cancel", result)
         return result

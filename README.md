@@ -15,9 +15,17 @@ make demo
 
 The command replays three bundled `inbox-triage` runs—two recorded model
 labels and one deliberate failure—and writes `docs/demo/index.html`. The
-single static page shows tool timelines, before/after state diffs, criterion
-results, and a side-by-side comparison. It performs no network calls and
-requires no API key.
+static observatory lets you select a recorded behavior culture, start, pause,
+step, and reset its real vendored trace, and watch tool activity, world state,
+and criteria evolve. The specimen rack preserves full tool timelines,
+before/after state diffs, criterion results, and a side-by-side comparison.
+It performs no network calls and requires no API key.
+
+The GitHub Pages root in `docs/index.html` is a complete product site covering
+the problem, thesis, real evidence, architecture, interactive observatory, and
+honest alpha scope. Its research basis and mapped evaluator journeys live in
+[`docs/COMPETITIVE_UI.md`](docs/COMPETITIVE_UI.md) and
+[`docs/USER_JOURNEYS.md`](docs/USER_JOURNEYS.md).
 
 ![TERRARIUM three-run replay report](docs/assets/demo.jpg)
 

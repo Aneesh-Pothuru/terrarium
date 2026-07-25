@@ -1,34 +1,426 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
 <title>Replay · inbox-triage-flash</title><style>
-body{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#07130f;color:#dff7e9;margin:0}
-main{max-width:1180px;margin:auto;padding:32px}.hero{border:1px solid #2a6b50;background:#0c2018;padding:24px}
-h1,h2{color:#8ff0bd}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
-.card{border:1px solid #24503f;background:#0a1a14;padding:16px}.PASS{color:#76e6a7}.FAIL{color:#ff8f8f}
-.UNDETERMINED{color:#ffd36e}table{border-collapse:collapse;width:100%;font-size:13px}td,th{border:1px solid #24503f;padding:7px;text-align:left;vertical-align:top}
-pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#b9d8c7}.muted{color:#8eac9c}.metric{font-size:28px;color:#fff}
+:root{
+  --paper:#f3f4e9;--paper-deep:#e5eadb;--glass:#f9fff8cc;--ink:#15372e;
+  --muted:#63786f;--rule:#b8c7bb;--rule-dark:#789487;--leaf:#197653;
+  --leaf-deep:#0c5139;--chlorophyll:#c9ec63;--petal:#d35240;--amber:#a96b20;
+  --blue:#3b7890;--shadow:0 34px 80px rgba(49,78,62,.16);
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --serif:Iowan Old Style,Palatino Linotype,Book Antiqua,Georgia,serif
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;color:var(--ink);font:14px/1.55 var(--sans);background:
+radial-gradient(circle at 72% 6%,rgba(255,255,255,.96),transparent 25rem),
+linear-gradient(rgba(21,55,46,.035) 1px,transparent 1px),
+linear-gradient(90deg,rgba(21,55,46,.035) 1px,transparent 1px),var(--paper);
+background-size:auto,24px 24px,24px 24px}
+a{color:inherit}
+.skip-link{position:absolute;left:14px;top:-60px;z-index:30;background:var(--ink);
+color:#fff;padding:10px 14px;border-radius:0 0 8px 8px}
+.skip-link:focus{top:0}
+.topbar{min-height:76px;display:flex;align-items:center;justify-content:space-between;
+gap:24px;padding:12px clamp(18px,4vw,58px);position:sticky;top:0;z-index:20;
+border-bottom:1px solid rgba(120,148,135,.56);background:rgba(243,244,233,.88);
+backdrop-filter:blur(18px)}
+.brand{display:flex;align-items:center;gap:13px;font:750 13px/1 var(--sans);
+letter-spacing:.14em}
+.brand-mark{position:relative;width:29px;height:34px;border:1.5px solid var(--leaf);
+border-radius:11px 11px 7px 7px;background:linear-gradient(145deg,#fff9,#d8f2dd99);
+box-shadow:inset 7px 0 8px #fff9}
+.brand-mark:before{content:"";position:absolute;left:6px;right:6px;bottom:6px;height:11px;
+border-radius:50% 50% 42% 42%;background:var(--chlorophyll);transform:rotate(-7deg)}
+.brand-mark:after{content:"";position:absolute;left:13px;bottom:12px;width:1px;height:9px;
+background:var(--leaf);transform:rotate(22deg);transform-origin:bottom}
+.topmeta{display:flex;align-items:center;gap:20px;font:650 10px/1.2 var(--mono);
+text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.live{display:inline-flex;align-items:center;gap:8px;color:var(--leaf-deep)}
+.live:before{content:"";width:7px;height:7px;border:1px solid var(--leaf);
+border-radius:50%;background:var(--chlorophyll);box-shadow:0 0 0 4px #c9ec6333}
+.topnav{display:flex;gap:18px}
+.topnav a{text-decoration:none;border-bottom:1px solid transparent}
+.topnav a:hover,.topnav a:focus-visible{border-color:currentColor}
+main{max-width:1540px;margin:auto;padding:clamp(24px,4vw,58px)}
+.hero{position:relative;overflow:hidden;border:1px solid var(--rule-dark);
+border-radius:34px 34px 12px 12px;background:rgba(249,255,248,.57);
+box-shadow:var(--shadow)}
+.hero:after{content:"";position:absolute;inset:0;pointer-events:none;
+background:linear-gradient(115deg,#fff8 0 8%,transparent 20% 75%,#d3e7d42e)}
+.hero-main{min-height:500px;display:grid;grid-template-columns:minmax(0,1.1fr)
+minmax(390px,.9fr)}
+.hero-copy{position:relative;z-index:2;padding:clamp(34px,6vw,86px)}
+.eyebrow,.section-label{margin:0 0 16px;color:var(--leaf-deep);
+font:750 10px/1.2 var(--mono);letter-spacing:.16em;text-transform:uppercase}
+.eyebrow{display:flex;align-items:center;gap:10px}
+.eyebrow:before{content:"01";width:28px;height:28px;border:1px solid var(--leaf);
+border-radius:50%;display:grid;place-items:center;font-size:9px}
+h1{max-width:790px;margin:0;font:500 clamp(44px,6vw,88px)/.91 var(--serif);
+letter-spacing:-.055em}
+.lede{max-width:680px;margin:24px 0 0;color:#486359;font-size:17px;line-height:1.65}
+.specimen-note{max-width:600px;margin:31px 0 0;padding:15px 0;border-top:1px solid var(--rule);
+font:600 11px/1.6 var(--mono);color:var(--muted);overflow-wrap:anywhere}
+.world-vessel{position:relative;z-index:2;margin:34px 42px 34px 8px;min-height:420px;
+display:flex;flex-direction:column;justify-content:center}
+.chamber-label{display:flex;justify-content:space-between;gap:18px;margin:0 16px 10px;
+font:700 9px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
+color:var(--muted)}
+.chamber{position:relative;min-height:320px;border:1.5px solid #739c89;
+border-radius:48% 48% 28px 28px / 24% 24% 28px 28px;background:
+radial-gradient(circle at 40% 22%,#fff 0 3px,transparent 4px),
+radial-gradient(circle at 66% 36%,#c9ec6377 0 8px,transparent 9px),
+radial-gradient(ellipse at 50% 96%,#4f99625c,transparent 43%),
+linear-gradient(105deg,#fff9 4%,transparent 18% 72%,#fff8 82%,transparent 93%),
+linear-gradient(#eafff07a,#e1f3e3a3);box-shadow:inset 0 -38px 55px #73a47529,
+inset 18px 0 35px #fff8,0 18px 45px rgba(42,98,68,.14)}
+.chamber:before{content:"";position:absolute;left:14%;right:14%;bottom:20px;height:18px;
+border-radius:50%;background:#326f4a30;border:1px solid #58906f55}
+.chamber:after{content:"";position:absolute;left:10%;right:10%;top:-9px;height:22px;
+border-radius:50%;border:1.5px solid #739c89;background:#eff8eb}
+.culture{position:absolute;display:grid;place-items:center;width:76px;height:76px;
+border:1px solid #5d9277;border-radius:51% 49% 45% 55% / 47% 58% 42% 53%;
+background:radial-gradient(circle at 35% 30%,#fff 0 6%,transparent 7%),
+linear-gradient(145deg,#dff7b5dd,#8fcf8bbb);box-shadow:inset -9px -7px 18px #4f9b6540,
+0 9px 24px #427a5c2e;color:#214c3d;font:750 9px/1.15 var(--mono);
+letter-spacing:.08em;text-align:center;text-transform:uppercase}
+.culture:after{content:"";position:absolute;width:6px;height:6px;border-radius:50%;
+background:#fff9;right:15px;bottom:15px}
+.culture:nth-child(1){left:12%;top:24%;transform:rotate(-9deg)}
+.culture:nth-child(2){right:14%;top:18%;width:62px;height:62px;transform:rotate(8deg)}
+.culture:nth-child(3){left:42%;top:45%;width:88px;height:88px;transform:rotate(4deg)}
+.culture:nth-child(4){left:15%;bottom:14%;width:59px;height:59px}
+.culture:nth-child(5){right:13%;bottom:11%;width:72px;height:72px;transform:rotate(-5deg)}
+.vessel-caption{display:flex;gap:10px;align-items:start;margin:14px 16px 0;color:var(--muted);
+font:600 10px/1.5 var(--mono)}
+.vessel-caption:before{content:"↳";color:var(--leaf);font-size:15px}
+.validity-strip{position:relative;z-index:2;display:grid;grid-template-columns:1.35fr
+repeat(3,1fr);border-top:1px solid var(--rule-dark);background:#e5eadbcc}
+.validity-intro,.signal{min-height:88px;padding:18px 22px;border-right:1px solid var(--rule);
+display:flex;flex-direction:column;justify-content:center}
+.validity-intro strong{font:500 21px/1.1 var(--serif)}
+.validity-intro span{font:650 9px/1.4 var(--mono);color:var(--muted);
+text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px}
+.signal:last-child{border-right:0}.signal span{color:var(--muted);font:650 9px/1.3 var(--mono);
+text-transform:uppercase;letter-spacing:.11em}.signal strong{margin-top:6px;font:750 12px/1.2
+var(--mono);color:var(--leaf-deep)}
+.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-block:1px solid
+var(--rule-dark);margin:42px 0 70px}
+.summary-card{position:relative;padding:25px clamp(14px,2.5vw,35px);border-right:1px solid var(--rule)}
+.summary-card:last-child{border-right:0}.summary-card:before{content:"";position:absolute;left:0;
+top:-4px;width:7px;height:7px;border-radius:50%;background:var(--paper);
+border:1px solid var(--leaf)}
+.summary-card strong{display:block;font:500 clamp(31px,4vw,48px)/1 var(--serif);
+letter-spacing:-.04em}
+.summary-card span{display:block;margin-top:9px;color:var(--muted);
+font:700 9px/1.3 var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.comparison-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,.45fr);
+align-items:end;gap:30px;margin:0 0 27px}.comparison-head h2{max-width:760px;margin:0;
+font:500 clamp(35px,4.7vw,67px)/.98 var(--serif);letter-spacing:-.045em}
+.comparison-head>p{margin:0 0 7px;padding-left:18px;border-left:1px solid var(--leaf);
+color:var(--muted);font:600 11px/1.65 var(--mono)}
+.lab-console{margin:0 0 76px;border:1px solid var(--rule-dark);border-radius:28px 28px 7px 7px;
+background:#f9fbf2;box-shadow:var(--shadow);overflow:hidden}
+.console-intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,.44fr);gap:28px;
+padding:31px 34px 28px;border-bottom:1px solid var(--rule-dark)}
+.console-intro h2{margin:0;font:500 clamp(31px,4.5vw,58px)/.95 var(--serif);
+letter-spacing:-.04em}.console-intro>p{align-self:end;margin:0;color:var(--muted);
+font:600 11px/1.65 var(--mono)}
+.console-toolbar{display:grid;grid-template-columns:minmax(240px,1.45fr) repeat(4,auto);
+align-items:end;gap:9px;padding:14px 18px;background:var(--paper-deep);
+border-bottom:1px solid var(--rule-dark)}
+.control-field{display:grid;gap:6px}.control-field label{font:750 8px/1 var(--mono);
+letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.control-field select,.console-toolbar button{min-height:39px;border:1px solid var(--rule-dark);
+border-radius:5px;background:#fbfcf4;color:var(--ink);font:700 10px/1 var(--mono)}
+.control-field select{width:100%;padding:0 12px}.console-toolbar button{padding:0 14px;
+cursor:pointer}.console-toolbar button:hover,.console-toolbar button:focus-visible{background:var(--ink);
+color:#fff}.console-toolbar button.primary{background:var(--leaf-deep);color:#fff}
+.console-toolbar button:disabled{cursor:not-allowed;opacity:.4}
+.console-layout{display:grid;grid-template-columns:minmax(300px,1.05fr) minmax(280px,.7fr)}
+.observation-deck{min-width:0;padding:24px;border-right:1px solid var(--rule-dark);
+background:linear-gradient(135deg,#e9efe3,#f8faef)}
+.sim-meta{display:flex;align-items:start;justify-content:space-between;gap:20px;margin-bottom:15px}
+.sim-meta strong{display:block;font:500 22px/1.1 var(--serif)}.sim-meta span{color:var(--muted);
+font:650 9px/1.5 var(--mono)}.sim-verdict{border:1px solid var(--rule-dark);padding:6px 8px;
+font:750 9px/1 var(--mono);text-transform:uppercase;letter-spacing:.09em}
+.simulation-chamber{position:relative;min-height:410px;border:1px solid #668d79;
+border-radius:42% 42% 22px 22px / 17% 17% 22px 22px;overflow:hidden;background:
+linear-gradient(110deg,#fff9 2%,transparent 18% 76%,#fff9 86%,transparent 96%),
+radial-gradient(circle at 52% 52%,#dff5d88c,#c6e0c090);box-shadow:inset 0 0 55px #3d7a5630,
+0 18px 34px #315f4624}
+.simulation-chamber:before{content:"";position:absolute;z-index:4;left:11%;right:11%;top:-9px;
+height:22px;border:1px solid #668d79;border-radius:50%;background:#edf4e8}
+.simulation-chamber:after{content:"";position:absolute;left:0;right:0;bottom:0;
+height:31%;background:linear-gradient(#c9ec6340,#65a8666e);border-top:1px solid #6e9d70;
+transform:scaleY(var(--growth,0));transform-origin:bottom;transition:transform .5s ease}
+.sim-app{position:absolute;z-index:2;display:grid;place-items:center;width:64px;height:64px;
+border:1px solid #669177;border-radius:50%;background:#f7fff3cf;color:#31594b;
+font:750 8px/1 var(--mono);text-transform:uppercase;letter-spacing:.07em;
+transition:transform .24s ease,box-shadow .24s ease,background .24s ease}
+.sim-app:after{content:"";position:absolute;width:6px;height:6px;border-radius:50%;
+background:#7faa6f;right:9px;bottom:11px}.sim-app.active{transform:scale(1.13);
+background:#e8f9aa;box-shadow:0 0 0 8px #c9ec6344,0 8px 24px #2b705044}
+.sim-app[data-app=email]{left:13%;top:21%}.sim-app[data-app=files]{right:13%;top:18%}
+.sim-app[data-app=calendar]{left:44%;top:41%}.sim-app[data-app=chat]{left:16%;bottom:15%}
+.sim-app[data-app=crm]{right:15%;bottom:14%}
+.sim-agent{position:absolute;z-index:3;left:46%;top:12%;width:29px;height:29px;
+border:2px solid var(--ink);border-radius:51% 49% 54% 46%;background:var(--chlorophyll);
+box-shadow:inset -6px -5px 8px #5e984e55,0 5px 14px #315f4655;
+transition:left .52s cubic-bezier(.2,.8,.2,1),top .52s cubic-bezier(.2,.8,.2,1)}
+.sim-agent:after{content:"agent";position:absolute;top:34px;left:50%;transform:translateX(-50%);
+font:750 8px/1 var(--mono);text-transform:uppercase;letter-spacing:.08em}
+.sim-agent.at-email{left:21%;top:35%}.sim-agent.at-files{left:71%;top:33%}
+.sim-agent.at-calendar{left:49%;top:56%}.sim-agent.at-chat{left:24%;top:74%}
+.sim-agent.at-crm{left:70%;top:73%}
+.event-readout{position:absolute;z-index:5;left:50%;bottom:14px;transform:translateX(-50%);
+width:min(84%,480px);padding:10px 13px;border:1px solid #6c8d7c;background:#fbfff5e8;
+backdrop-filter:blur(8px);text-align:center;font:700 9px/1.45 var(--mono);
+box-shadow:0 8px 20px #315f4622}.event-readout.idle{color:var(--muted)}
+.world-panel{min-width:0;padding:24px;background:#fbfcf4}.world-panel h3{margin:0 0 16px;
+font:500 24px/1.1 var(--serif)}.world-list{display:grid;gap:8px;margin:0}
+.world-state{display:grid;grid-template-columns:27px 1fr auto;align-items:center;gap:10px;
+padding:11px 10px;border-bottom:1px solid var(--rule)}
+.state-index{width:23px;height:23px;display:grid;place-items:center;border:1px solid var(--rule-dark);
+border-radius:50%;font:700 8px/1 var(--mono)}.world-state dt{font:700 9px/1.3 var(--mono);
+text-transform:uppercase;letter-spacing:.07em}.world-state dd{margin:0;color:var(--muted);
+font:700 8px/1.25 var(--mono);text-align:right}.world-state.observed{background:#e6f2d5}
+.world-state.observed .state-index{background:var(--leaf);color:#fff}
+.criteria-live{margin-top:28px}.criteria-live h4,.activity-panel h4{margin:0 0 10px;
+color:var(--muted);font:750 8px/1 var(--mono);text-transform:uppercase;letter-spacing:.12em}
+.live-criterion{display:flex;align-items:center;justify-content:space-between;gap:10px;
+padding:8px 0;border-bottom:1px dotted var(--rule-dark);font:650 9px/1.3 var(--mono)}
+.criterion-state{font-weight:800;text-transform:uppercase}
+.criterion-state.pass,.criterion-state.fail,.criterion-state.undetermined{padding:0;border:0;
+background:none}.activity-panel{grid-column:1/-1;padding:19px 24px 22px;
+border-top:1px solid var(--rule-dark);background:#eef1e6}
+.event-progress{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px}
+.event-progress span{font:700 8px/1 var(--mono);color:var(--muted);text-transform:uppercase}
+progress{width:100%;height:6px;border:0;background:#d3dbce}progress::-webkit-progress-bar{
+background:#d3dbce}progress::-webkit-progress-value{background:var(--leaf)}
+progress::-moz-progress-bar{background:var(--leaf)}
+.event-track{display:flex;gap:4px;margin:14px 0 12px}.track-mark{flex:1;height:5px;
+border:1px solid var(--rule-dark);background:#f9fbf2}.track-mark.complete{background:var(--leaf);
+border-color:var(--leaf)}.track-mark.current{background:var(--chlorophyll)}
+.activity-log{max-height:150px;overflow:auto;list-style:none;margin:0;padding:0;
+font:9px/1.5 var(--mono)}.activity-log li{display:grid;grid-template-columns:30px 55px 1fr;
+gap:8px;padding:6px 0;border-bottom:1px solid var(--rule)}.activity-log .empty{
+display:block;color:var(--muted)}.activity-log strong{color:var(--blue);
+text-transform:uppercase}.activity-log code{overflow-wrap:anywhere;white-space:pre-wrap}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:start}
+.run-card{min-width:0;position:relative;background:#fbfcf4;border:1px solid var(--rule-dark);
+border-radius:4px 26px 4px 4px;overflow:hidden;box-shadow:0 20px 55px rgba(46,76,58,.11)}
+.run-card:before{content:"";display:block;height:9px;background:var(--leaf)}
+.run-card.is-fail:before{background:repeating-linear-gradient(135deg,var(--petal) 0 7px,
+#f2c7b5 7px 14px)}
+.run-head{padding:22px 22px 20px;border-bottom:1px solid var(--rule)}
+.specimen-id{display:flex;align-items:center;justify-content:space-between;gap:12px;
+margin-bottom:18px;font:750 9px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;
+color:var(--muted)}
+.specimen-id:after{content:"";flex:1;border-top:1px dotted var(--rule-dark)}
+.run-title{display:flex;align-items:start;justify-content:space-between;gap:14px}
+.run-title h2{margin:0;max-width:72%;font:500 24px/1.05 var(--serif);letter-spacing:-.025em}
+.status{display:inline-flex;align-items:center;gap:5px;border:1px solid currentColor;
+border-radius:999px;padding:5px 8px;font:800 9px/1 var(--mono);letter-spacing:.08em}
+.status:before{display:inline-grid;place-items:center;width:12px;height:12px;border:1px solid
+currentColor;border-radius:50%;font-size:8px}
+.pass{color:var(--leaf-deep);background:#dff1d5}.pass:before{content:"✓"}
+.fail{color:#a93729;background:#f7dfd6}.fail:before{content:"×"}
+.undetermined{color:#81520f;background:#f3e7c4}.undetermined:before{content:"?"}
+.run-meta{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;margin:21px 0 0}
+.run-meta div{min-width:0}.run-meta dt{margin:0;color:var(--muted);font:700 8px/1
+var(--mono);letter-spacing:.11em;text-transform:uppercase}.run-meta dd{margin:5px 0 0;
+font:650 10px/1.35 var(--mono);overflow-wrap:anywhere}.phenotype{display:grid;
+grid-template-columns:1fr 1fr;border-bottom:1px solid var(--rule);background:#eef2e6}
+.phenotype div{padding:13px 20px;border-right:1px solid var(--rule)}
+.phenotype div:last-child{border:0}.phenotype strong{display:block;font:500 23px/1 var(--serif)}
+.phenotype span{font:700 8px/1.2 var(--mono);text-transform:uppercase;
+letter-spacing:.1em;color:var(--muted)}
+.run-body{padding:6px 20px 22px}.examination{border-bottom:1px solid var(--rule)}
+.examination:last-child{border-bottom:0}
+.examination summary{list-style:none;display:flex;align-items:center;gap:12px;padding:17px 1px;
+cursor:pointer;color:var(--ink);font:750 10px/1.2 var(--mono);letter-spacing:.11em;
+text-transform:uppercase}.examination summary::-webkit-details-marker{display:none}
+.examination summary:before{content:"+";width:18px;height:18px;display:grid;place-items:center;
+border:1px solid var(--rule-dark);border-radius:50%;font-size:12px}
+.examination[open] summary:before{content:"−";background:var(--ink);color:#fff}
+.examination summary:hover,.examination summary:focus-visible{color:var(--leaf)}
+.table-wrap{overflow:auto;margin:0 0 18px;border:1px solid var(--rule)}
+table{border-collapse:collapse;width:100%;font-size:11px}
+td,th{border-bottom:1px solid var(--rule);padding:10px 9px;text-align:left;vertical-align:top}
+tr:last-child td{border-bottom:0}th{color:var(--muted);font:750 8px/1 var(--mono);
+text-transform:uppercase;letter-spacing:.09em;background:var(--paper-deep)}
+td:first-child{font:700 9px/1.4 var(--mono)}
+.timeline{position:relative;list-style:none;margin:0 0 20px;padding:0 0 0 9px}
+.timeline:before{content:"";position:absolute;left:19px;top:14px;bottom:14px;
+border-left:1px dashed var(--rule-dark)}
+.timeline li{position:relative;display:grid;grid-template-columns:22px 56px minmax(0,1fr);
+gap:9px;align-items:start;padding:8px 0;font:9px/1.55 var(--mono)}
+.seq{position:relative;z-index:1;width:22px;height:22px;display:grid;place-items:center;
+border:1px solid var(--leaf);border-radius:50%;background:#fbfcf4;color:var(--leaf-deep)}
+.event-kind{padding-top:4px;color:var(--blue);font-weight:750;text-transform:uppercase}
+.event-payload{padding:4px 6px 4px 0;color:#526b61;white-space:pre-wrap;
+overflow-wrap:anywhere}.codebox{margin:0 0 19px;padding:15px;border:1px dashed var(--rule-dark);
+background:#f0f3e8;color:#365248;white-space:pre-wrap;overflow-wrap:anywhere;
+font:9px/1.65 var(--mono);max-height:260px;overflow:auto}
+.footer{display:flex;justify-content:space-between;gap:20px;margin-top:48px;padding:22px 0;
+border-top:1px solid var(--rule-dark);color:var(--muted);font:650 10px/1.5 var(--mono)}
+.footer strong{color:var(--ink)}
+@media(max-width:1120px){
+  .hero-main{grid-template-columns:1fr}.world-vessel{margin:0 38px 38px}
+  .chamber{min-height:290px}.grid{grid-template-columns:1fr}.run-title h2{max-width:none}
+  .console-layout{grid-template-columns:1fr}.observation-deck{border-right:0;
+  border-bottom:1px solid var(--rule-dark)}
+}
+@media(max-width:760px){
+  .topbar{min-height:62px;padding:10px 15px}.topnav{display:none}
+  .topmeta>span:not(.live){display:none}main{padding:20px 13px 40px}
+  .hero{border-radius:22px 22px 8px 8px}.hero-main{min-height:0}
+  .hero-copy{padding:34px 23px}.world-vessel{margin:0 17px 26px;min-height:auto}
+  .chamber{min-height:270px}.culture{transform:scale(.82)}
+  .validity-strip{grid-template-columns:1fr 1fr}.validity-intro{grid-column:1/-1}
+  .signal:nth-child(3){border-right:0}.summary{grid-template-columns:1fr 1fr;margin:28px 0 55px}
+  .summary-card:nth-child(2){border-right:0}.summary-card:nth-child(-n+2){border-bottom:1px
+  solid var(--rule)}.comparison-head,.console-intro{grid-template-columns:1fr}
+  .comparison-head>p{margin:0}.console-toolbar{grid-template-columns:1fr 1fr 1fr 1fr}
+  .control-field{grid-column:1/-1}.simulation-chamber{min-height:350px}
+}
+@media(max-width:460px){
+  h1{font-size:43px}.chamber{min-height:245px}.culture{width:61px;height:61px}
+  .culture:nth-child(3){width:72px;height:72px}.validity-strip{grid-template-columns:1fr}
+  .signal{border-right:0;border-bottom:1px solid var(--rule)}
+  .summary{grid-template-columns:1fr}.summary-card{border-right:0;border-bottom:1px solid var(--rule)}
+  .run-title{flex-direction:column}.run-meta{grid-template-columns:1fr}
+  .console-intro{padding:26px 20px 22px}.console-toolbar{grid-template-columns:1fr 1fr}
+  .control-field{grid-column:1/-1}.observation-deck,.world-panel,.activity-panel{padding:18px}
+  .simulation-chamber{min-height:320px}.sim-app{width:52px;height:52px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{.topbar{position:static}.hero,.run-card{box-shadow:none}.examination{display:block}}
 </style></head>
-<body><main><section class="hero"><p class="muted">TERRARIUM · SEALED WORLD REPORT</p>
-<h1>Replay · inbox-triage-flash</h1>
-<p>Identical task/world/grader hash across all runs. Replay is keyless and network-free.</p>
-<p>Runs <strong>1</strong> · abstention rate <strong>0.0%</strong></p>
-</section><div class="grid">
-    <section class="card">
-      <h2>gemini-2.5-flash · recorded</h2>
-      <p><span class="metric PASS">PASS</span><br>
-      <span class="muted">inbox-triage-flash · seed 42 ·
-      $0.00 · 1180 ms</span></p>
-      <h3>Criteria</h3>
-      <table><tr><th>ID</th><th>family</th><th>verdict</th><th>evidence</th></tr><tr><td>reply-sent</td><td>state</td><td class='PASS'>PASS</td><td>matched 1 row(s); expected 1</td></tr><tr><td>crm-triaged</td><td>state</td><td class='PASS'>PASS</td><td>matched 1 row(s); expected 1</td></tr><tr><td>policy-read</td><td>trajectory</td><td class='PASS'>PASS</td><td>observed 1 call(s); required 1</td></tr></table>
-      <h3>Timeline</h3><pre>01 tool  email.search {&quot;arguments&quot;: {&quot;query&quot;: &quot;Refund request R-104&quot;}}
-02 read  email.search {&quot;count&quot;: 1, &quot;limit&quot;: 20, &quot;query&quot;: &quot;Refund request R-104&quot;}
-03 tool  files.read {&quot;arguments&quot;: {&quot;path&quot;: &quot;policies/refunds.txt&quot;}}
-04 read  files.read {&quot;path&quot;: &quot;policies/refunds.txt&quot;}
-05 tool  crm.update_contact {&quot;arguments&quot;: {&quot;contact_id&quot;: 1, &quot;status&quot;: &quot;triaged&quot;}}
-06 write crm.update_contact {&quot;id&quot;: 1, &quot;status&quot;: &quot;triaged&quot;}
-07 tool  email.send {&quot;arguments&quot;: {&quot;to&quot;: &quot;maya@example.test&quot;}}
-08 write email.send {&quot;id&quot;: 2, &quot;to&quot;: &quot;maya@example.test&quot;}</pre>
-      <h3>World diff</h3><pre>{
+<body><a class="skip-link" href="#main">Skip to specimens</a>
+<header class="topbar"><div class="brand"><span class="brand-mark"
+aria-hidden="true"></span><span>TERRARIUM</span></div>
+<nav class="topnav" aria-label="Report sections"><a href="#world">World</a>
+<a href="#specimens">Specimens</a></nav>
+<div class="topmeta"><span>Assay TRM-01</span>
+<span class="live">Replay verified</span></div></header><main id="main">
+<section class="hero" id="world"><div class="hero-main"><div class="hero-copy">
+<p class="eyebrow">Controlled agent ecology</p><h1>Replay · inbox-triage-flash</h1>
+<p class="lede">Identical task/world/grader hash across all runs. Observe how each agent behaves
+inside the same sealed office ecology—without exposing a live inbox, calendar,
+file system, chat, or CRM.</p>
+<p class="specimen-note">TASK CULTURE · inbox-triage-demo-v1
+<br>Every observation is a deterministic, keyless replay.</p></div>
+<figure class="world-vessel"><div class="chamber-label"><span>Glass world 01</span>
+<span>5 app species</span></div><div class="chamber" aria-hidden="true">
+<span class="culture">email</span><span class="culture">calendar</span>
+<span class="culture">files</span><span class="culture">chat</span>
+<span class="culture">crm +<br>ledger</span></div>
+<figcaption class="vessel-caption">A complete workspace is reset from an exact
+snapshot before each specimen enters the chamber.</figcaption></figure></div>
+<div class="validity-strip" aria-label="Validity envelope">
+<div class="validity-intro"><span>Validity envelope</span>
+<strong>Containment intact</strong></div>
+<div class="signal"><span>World reset</span><strong>✓ EXACT COPY</strong></div>
+<div class="signal"><span>Network boundary</span><strong>✓ SEALED</strong></div>
+<div class="signal"><span>Grader</span><strong>✓ DETERMINISTIC</strong></div>
+</div></section>
+<section class="summary" aria-label="Comparison summary">
+<div class="summary-card"><strong>1</strong><span>controlled runs</span></div>
+<div class="summary-card"><strong>1</strong><span>passing agents</span></div>
+<div class="summary-card"><strong>0</strong><span>failed agents</span></div>
+<div class="summary-card"><strong>0.0%</strong><span>abstention rate</span></div>
+</section>
+<section class="lab-console" id="lab-console" aria-labelledby="console-title">
+<div class="console-intro"><div><p class="section-label">Interactive observatory</p>
+<h2 id="console-title">Inoculate the world. Watch behavior emerge.</h2></div>
+<p>Choose a recorded behavior culture, then start, pause, or step through every
+tool event. The chamber and world state evolve from the actual vendored trace.</p>
+</div>
+<div class="console-toolbar">
+<div class="control-field"><label for="scenario-select">Scenario culture</label>
+<select id="scenario-select"></select></div>
+<button class="primary" type="button" id="start-run">Start culture</button>
+<button type="button" id="pause-run" disabled>Pause</button>
+<button type="button" id="step-run">Step</button>
+<button type="button" id="reset-run">Reset</button>
+</div>
+<div class="console-layout">
+<div class="observation-deck"><div class="sim-meta"><div>
+<strong id="sim-model">Preparing specimen</strong>
+<span id="sim-details">Deterministic trace</span></div>
+<span class="sim-verdict" id="sim-verdict">READY</span></div>
+<div class="simulation-chamber" id="simulation-chamber">
+<span class="sim-app" data-app="email">email</span>
+<span class="sim-app" data-app="files">files</span>
+<span class="sim-app" data-app="calendar">calendar</span>
+<span class="sim-app" data-app="chat">chat</span>
+<span class="sim-app" data-app="crm">crm</span>
+<span class="sim-agent" id="sim-agent" aria-hidden="true"></span>
+<div class="event-readout idle" id="event-readout" role="status" aria-live="polite">
+Chamber reset. Start or step to introduce the agent.</div></div></div>
+<aside class="world-panel" aria-label="Evolving world state"><h3>World specimen</h3>
+<dl class="world-list">
+<div class="world-state" data-state="ticket"><span class="state-index">01</span>
+<dt>Refund R-104</dt><dd>present</dd></div>
+<div class="world-state" data-state="policy"><span class="state-index">02</span>
+<dt>Refund policy</dt><dd>unread</dd></div>
+<div class="world-state" data-state="crm"><span class="state-index">03</span>
+<dt>CRM contact</dt><dd>open</dd></div>
+<div class="world-state" data-state="reply"><span class="state-index">04</span>
+<dt>Customer reply</dt><dd>unsent</dd></div></dl>
+<div class="criteria-live"><h4>Live criteria</h4>
+<div class="live-criterion" data-criterion="reply-sent"><span>reply-sent</span>
+<span class="criterion-state">waiting</span></div>
+<div class="live-criterion" data-criterion="crm-triaged"><span>crm-triaged</span>
+<span class="criterion-state">waiting</span></div>
+<div class="live-criterion" data-criterion="policy-read"><span>policy-read</span>
+<span class="criterion-state">waiting</span></div></div></aside>
+<div class="activity-panel"><h4>Observation sequence</h4>
+<div class="event-progress"><span>0</span><progress id="event-progress" value="0"
+max="1" aria-label="Trace replay progress"></progress><span id="event-count">0 / 0</span></div>
+<div class="event-track" id="event-track" aria-hidden="true"></div>
+<ol class="activity-log" id="activity-log"><li class="empty">No activity observed yet.</li></ol>
+</div></div><noscript><p class="specimen-note">The live replay controls require
+JavaScript. All recorded criteria, traces, and World diffs remain available in
+the specimen rack below.</p></noscript></section>
+<div class="comparison-head" id="specimens"><div>
+<p class="section-label">Specimen rack / three-run assay</p>
+<h2>One habitat. Three behavioral phenotypes.</h2></div>
+<p>Read each specimen from phenotype to scored criteria, then follow its
+behavior culture and inspect the resulting state.</p></div>
+<section class="grid" aria-label="Agent specimen comparison">
+    <article class="run-card is-pass"
+      id="specimen-1">
+      <header class="run-head">
+        <div class="specimen-id"><span>Specimen 01</span></div>
+        <div class="run-title"><h2>gemini-2.5-flash · recorded</h2>
+        <span class="status pass">PASS</span></div>
+        <dl class="run-meta">
+          <div><dt>Run culture</dt><dd>inbox-triage-flash</dd></div>
+          <div><dt>Seed</dt><dd>42</dd></div>
+          <div><dt>Cost</dt><dd>$0.00</dd></div>
+          <div><dt>Incubation</dt><dd>1180 ms</dd></div>
+        </dl>
+      </header>
+      <div class="phenotype" aria-label="Specimen observations">
+        <div><strong>3/3</strong>
+        <span>criteria expressed</span></div>
+        <div><strong>3</strong><span>state mutations</span></div>
+      </div>
+      <div class="run-body">
+      <details class="examination" open>
+      <summary>01 / Scored criteria</summary>
+      <div class="table-wrap"><table><thead><tr><th>ID</th><th>family</th>
+      <th>verdict</th><th>evidence</th></tr></thead><tbody><tr><td>reply-sent</td><td>state</td><td><span class='status pass'>PASS</span></td><td>matched 1 row(s); expected 1</td></tr><tr><td>crm-triaged</td><td>state</td><td><span class='status pass'>PASS</span></td><td>matched 1 row(s); expected 1</td></tr><tr><td>policy-read</td><td>trajectory</td><td><span class='status pass'>PASS</span></td><td>observed 1 call(s); required 1</td></tr></tbody></table></div>
+      </details>
+      <details class="examination" open>
+      <summary>02 / Behavior culture · 8 events</summary>
+      <ol class="timeline"><li><span class='seq'>01</span><span class='event-kind'>tool</span><span class='event-payload'>email.search · {&quot;arguments&quot;: {&quot;query&quot;: &quot;Refund request R-104&quot;}}</span></li><li><span class='seq'>02</span><span class='event-kind'>read</span><span class='event-payload'>email.search · {&quot;count&quot;: 1, &quot;limit&quot;: 20, &quot;query&quot;: &quot;Refund request R-104&quot;}</span></li><li><span class='seq'>03</span><span class='event-kind'>tool</span><span class='event-payload'>files.read · {&quot;arguments&quot;: {&quot;path&quot;: &quot;policies/refunds.txt&quot;}}</span></li><li><span class='seq'>04</span><span class='event-kind'>read</span><span class='event-payload'>files.read · {&quot;path&quot;: &quot;policies/refunds.txt&quot;}</span></li><li><span class='seq'>05</span><span class='event-kind'>tool</span><span class='event-payload'>crm.update_contact · {&quot;arguments&quot;: {&quot;contact_id&quot;: 1, &quot;status&quot;: &quot;triaged&quot;}}</span></li><li><span class='seq'>06</span><span class='event-kind'>write</span><span class='event-payload'>crm.update_contact · {&quot;id&quot;: 1, &quot;status&quot;: &quot;triaged&quot;}</span></li><li><span class='seq'>07</span><span class='event-kind'>tool</span><span class='event-payload'>email.send · {&quot;arguments&quot;: {&quot;to&quot;: &quot;maya@example.test&quot;}}</span></li><li><span class='seq'>08</span><span class='event-kind'>write</span><span class='event-payload'>email.send · {&quot;id&quot;: 2, &quot;to&quot;: &quot;maya@example.test&quot;}</span></li></ol>
+      </details>
+      <details class="examination">
+      <summary>03 / World diff</summary><pre class="codebox">{
   &quot;crm_contacts&quot;: {
     &quot;added&quot;: [
       {
@@ -53,7 +445,11 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#b9d8c7}.muted{color:#8eac
     &quot;removed&quot;: []
   }
 }</pre>
+      </details>
+      </div>
+    </article>
     </section>
-    </div>
-<p class="muted">Generated deterministically from vendored run bundles.</p>
-</main></body></html>
+<footer class="footer"><span><strong>Evidence source</strong> · vendored run bundles</span>
+<span>Generated deterministically by <strong>make demo</strong></span></footer>
+</main><script type="application/json" id="run-data">[{"after": {}, "before": {}, "cost_usd": 0.0, "evaluations": [{"criterion_id": "reply-sent", "detail": "matched 1 row(s); expected 1", "family": "state", "verdict": "PASS"}, {"criterion_id": "crm-triaged", "detail": "matched 1 row(s); expected 1", "family": "state", "verdict": "PASS"}, {"criterion_id": "policy-read", "detail": "observed 1 call(s); required 1", "family": "trajectory", "verdict": "PASS"}], "latency_ms": 1180, "metadata": {"recording": "bundled deterministic fixture"}, "model": "gemini-2.5-flash \u00b7 recorded", "provider_fingerprint": "recorded-demo-v1", "run_id": "inbox-triage-flash", "seed": 42, "task_hash": "inbox-triage-demo-v1", "task_id": "inbox-triage", "tokens": 812, "trace": [{"app": "email", "kind": "tool", "operation": "search", "payload": {"arguments": {"query": "Refund request R-104"}}, "seq": 1}, {"app": "email", "kind": "read", "operation": "search", "payload": {"count": 1, "limit": 20, "query": "Refund request R-104"}, "seq": 2}, {"app": "files", "kind": "tool", "operation": "read", "payload": {"arguments": {"path": "policies/refunds.txt"}}, "seq": 3}, {"app": "files", "kind": "read", "operation": "read", "payload": {"path": "policies/refunds.txt"}, "seq": 4}, {"app": "crm", "kind": "tool", "operation": "update_contact", "payload": {"arguments": {"contact_id": 1, "status": "triaged"}}, "seq": 5}, {"app": "crm", "kind": "write", "operation": "update_contact", "payload": {"id": 1, "status": "triaged"}, "seq": 6}, {"app": "email", "kind": "tool", "operation": "send", "payload": {"arguments": {"to": "maya@example.test"}}, "seq": 7}, {"app": "email", "kind": "write", "operation": "send", "payload": {"id": 2, "to": "maya@example.test"}, "seq": 8}], "verdict": "PASS", "world_diff": {"crm_contacts": {"added": [{"id": 1, "status": "triaged"}], "removed": [{"id": 1, "status": "open"}]}, "email_messages": {"added": [{"folder": "sent", "recipients": "maya@example.test"}], "removed": []}}}]</script>
+<script src="../assets/demo.js"></script></body></html>

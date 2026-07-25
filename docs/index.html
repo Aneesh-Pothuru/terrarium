@@ -1,8 +1,269 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
-<meta http-equiv="refresh" content="0; url=demo/index.html">
-<title>TERRARIUM demo</title></head>
-<body><p><a href="demo/index.html">Open the TERRARIUM replay demo</a>.</p></body>
-</html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="A sealed, resettable workspace for evaluating tool-using AI agents before they touch live systems.">
+  <meta name="theme-color" content="#f3f4e9">
+  <title>TERRARIUM · A living lab for tool-using agents</title>
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="#home" aria-label="Terrarium home">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>TERRARIUM</span>
+    </a>
+    <nav class="nav" aria-label="Primary navigation">
+      <a href="#problem">Problem</a>
+      <a href="#thesis">Thesis</a>
+      <a href="#evidence">Evidence</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#scope">About</a>
+    </nav>
+    <a class="header-cta" href="demo/index.html">Enter the lab →</a>
+  </header>
 
+  <main id="main">
+    <section class="hero" id="home">
+      <div class="hero-copy">
+        <p class="kicker">A living lab for tool-using agents</p>
+        <h1>Test the agent.<br>Preserve the world.</h1>
+        <p>Grow repeatable agent behavior inside a sealed office ecology—email,
+          calendar, files, chat, and CRM—before a single action reaches a real
+          customer or system.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="demo/index.html">Run the keyless demo →</a>
+          <a class="button secondary" href="https://github.com/Aneesh-Pothuru/terrarium">Inspect the source</a>
+        </div>
+        <div class="micro-proof">Deterministic replay · zero API keys · Python standard library</div>
+      </div>
+      <div class="hero-visual" role="img" aria-label="A sealed glass world containing five simulated workplace applications">
+        <div class="orbit" aria-hidden="true"></div>
+        <div class="vessel">
+          <span class="organism">email</span>
+          <span class="organism">calendar</span>
+          <span class="organism">files</span>
+          <span class="organism">chat</span>
+          <span class="organism">crm</span>
+          <span class="vessel-label"><strong>World 01</strong>containment intact</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="proof-strip" aria-label="Product facts">
+      <div class="proof-item"><strong>5</strong><span>stateful app species</span></div>
+      <div class="proof-item"><strong>15</strong><span>inspectable tools</span></div>
+      <div class="proof-item"><strong>3</strong><span>bundled run cultures</span></div>
+      <div class="proof-item"><strong>0</strong><span>network calls in demo</span></div>
+    </section>
+
+    <section class="section" id="problem">
+      <div class="section-head">
+        <div>
+          <p class="section-kicker">The problem / unsafe evaluation</p>
+          <h2>A test that touches production is already an incident surface.</h2>
+        </div>
+        <p>Agent quality is contextual. A model can produce a plausible answer
+          while skipping policy, mutating the wrong record, or taking the right
+          action for the wrong reason.</p>
+      </div>
+      <div class="problem-grid">
+        <div class="problem-copy">
+          <blockquote>“Did it work?” is not enough. You need to know what the
+            agent read, what it changed, and whether the world was identical.</blockquote>
+          <p>Terrarium replaces shared sandboxes and mocked return strings with a
+            resettable stateful environment. Every tool call, read, write, and
+            resulting state transition becomes part of the evidence.</p>
+        </div>
+        <div class="exposure">
+          <h3>Live exposure surface</h3>
+          <div class="bar-group">
+            <div class="bar-label"><span>Direct live test</span><span>5 app surfaces</span></div>
+            <div class="bar"><span style="width:100%"></span></div>
+          </div>
+          <div class="bar-group">
+            <div class="bar-label"><span>Terrarium replay</span><span>0 live surfaces</span></div>
+            <div class="bar safe"><span style="width:0%"></span></div>
+          </div>
+          <p class="bar-note">The sealed demo uses a local SQLite snapshot and
+            vendored run bundles. The comparison never contacts email, calendar,
+            files, chat, CRM, a model API, or another deployed service.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="thesis">
+      <div class="section-head">
+        <div>
+          <p class="section-kicker">The product thesis</p>
+          <h2>Treat AI behavior like a specimen, not a score.</h2>
+        </div>
+        <p>A credible comparison starts with environmental control, retains the
+          behavioral trace, and ends with evidence tied to state.</p>
+      </div>
+      <div class="thesis-grid">
+        <article class="thesis-card">
+          <span class="thesis-index">01</span>
+          <h3>Reset the habitat</h3>
+          <p>Copy the exact world snapshot for every run. Pin task, world, grader,
+            and seed so the comparison has a controlled baseline.</p>
+        </article>
+        <article class="thesis-card">
+          <span class="thesis-index">02</span>
+          <h3>Observe the phenotype</h3>
+          <p>Record every dispatched tool call, read, write, latency, and payload.
+            The trajectory is evidence, not debugging exhaust.</p>
+        </article>
+        <article class="thesis-card">
+          <span class="thesis-index">03</span>
+          <h3>Score the state</h3>
+          <p>Evaluate what changed and how it changed. Keep failure and
+            undetermined outcomes explicit instead of forcing a flattering mean.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="evidence">
+      <div class="section-head">
+        <div>
+          <p class="section-kicker">Evidence / bundled assay TRM-01</p>
+          <h2>Three behaviors enter the same world. Their outcomes diverge.</h2>
+        </div>
+        <p>These are the actual results in the repository: one task, seed 42,
+          three recorded traces, three criteria, and a deliberate failure.</p>
+      </div>
+      <div class="evidence-panel">
+        <div class="evidence-top">
+          <div class="chart">
+            <h3>Criteria expressed</h3>
+            <p>State + trajectory evaluations passed by each specimen</p>
+            <div class="assay-bar fail">
+              <span>Failure drill</span><div class="assay-rail"><span style="width:33.333%"></span></div><b>1/3</b>
+            </div>
+            <div class="assay-bar">
+              <span>Gemini 2.5 Flash</span><div class="assay-rail"><span style="width:100%"></span></div><b>3/3</b>
+            </div>
+            <div class="assay-bar">
+              <span>Llama 3.3 70B</span><div class="assay-rail"><span style="width:100%"></span></div><b>3/3</b>
+            </div>
+          </div>
+          <div class="trace-proof">
+            <h3>Behavior becomes lineage</h3>
+            <p>One passing trace: policy read → CRM update → customer reply</p>
+            <div class="trace-line" aria-label="Eight-event tool trace">
+              <span class="trace-node">01</span><span class="trace-node">02</span>
+              <span class="trace-node">03</span><span class="trace-node">04</span>
+              <span class="trace-node write">05</span><span class="trace-node write">06</span>
+              <span class="trace-node write">07</span><span class="trace-node write">08</span>
+            </div>
+            <p>The failure still sends a reply. Its trace proves that policy was
+              never read and CRM was never triaged—evidence a final answer hides.</p>
+          </div>
+        </div>
+        <div class="evidence-foot">
+          <div class="evidence-stat"><strong>20</strong><span>observed trace events</span></div>
+          <div class="evidence-stat"><strong>7/9</strong><span>criteria passed</span></div>
+          <div class="evidence-stat"><strong>430–1540</strong><span>recorded latency, ms</span></div>
+          <div class="evidence-stat"><strong>$0.00</strong><span>replay cost</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="architecture">
+      <div class="section-head">
+        <div>
+          <p class="section-kicker">Architecture / deterministic by construction</p>
+          <h2>A short path from task to inspectable evidence.</h2>
+        </div>
+        <p>The CLI, app modules, and MCP-shaped stdio surface share one world
+          dispatch path. No hidden evaluation service is required.</p>
+      </div>
+      <div class="architecture">
+        <article class="arch-step"><span class="arch-node">TASK</span>
+          <div><h3>Define</h3><p>Fixture, success criteria, mutations, and
+            content hashes become a TaskSpec.</p></div></article>
+        <article class="arch-step"><span class="arch-node">COPY</span>
+          <div><h3>Reset</h3><p>An exact SQLite snapshot becomes an isolated
+            run world.</p></div></article>
+        <article class="arch-step"><span class="arch-node">CALL</span>
+          <div><h3>Dispatch</h3><p>Five app modules expose 15 tools through the
+            same logged call path.</p></div></article>
+        <article class="arch-step"><span class="arch-node">EVAL</span>
+          <div><h3>Observe</h3><p>State and trajectory graders emit a portable
+            run bundle and static report.</p></div></article>
+      </div>
+      <pre class="arch-code" aria-label="Terrarium quick start"><code><span class="accent">$</span> git clone https://github.com/Aneesh-Pothuru/terrarium
+<span class="accent">$</span> cd terrarium
+<span class="accent">$</span> make demo
+
+TERRARIUM demo: replayed 3 bundled runs
+report: docs/demo/index.html</code></pre>
+    </section>
+
+    <section class="section" id="demo">
+      <div class="demo-callout">
+        <div class="demo-copy">
+          <p class="section-kicker">Interactive observatory</p>
+          <h2>Step inside the glass world.</h2>
+          <p>Select a recorded behavior culture. Start, pause, step, or reset the
+            deterministic trace. Watch tool activity move through the chamber,
+            world state mutate, and criteria resolve in real time.</p>
+          <a class="button primary" href="demo/index.html">Launch the observatory →</a>
+        </div>
+        <div class="demo-preview" aria-hidden="true">
+          <div class="demo-vessel">
+            <span class="demo-node">email</span><span class="demo-node">files</span>
+            <span class="demo-node">calendar</span><span class="demo-node">chat</span>
+            <span class="demo-node">crm</span><span class="demo-agent"></span>
+          </div>
+          <div class="demo-controls"><span>Start culture</span><span>Pause</span>
+            <span>Step</span><span>Reset</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="scope">
+      <div class="section-head">
+        <div>
+          <p class="section-kicker">About / honest alpha</p>
+          <h2>Small enough to audit. Real enough to learn from.</h2>
+        </div>
+        <p>Terrarium v0.1 is a transparent research substrate, not a claim of
+          production-complete orchestration or full protocol conformance.</p>
+      </div>
+      <div class="scope-grid">
+        <article class="scope-card"><h3>What ships</h3><ul>
+          <li>Resettable SQLite world with five stateful app modules</li>
+          <li>Stable task, world, and grader hashes</li>
+          <li>Tool/read/write trace bundles and world diffs</li>
+          <li>Oracle, null-agent, and mutation validity gates</li>
+          <li>Keyless CLI, report, replay, diff, and stdio flows</li>
+        </ul></article>
+        <article class="scope-card not"><h3>What it does not claim</h3><ul>
+          <li>Production authentication, tenancy, or secret management</li>
+          <li>Full MCP protocol conformance or remote transport</li>
+          <li>A universal benchmark or real-model leaderboard</li>
+          <li>Network isolation beyond the intentionally offline demo path</li>
+          <li>Replacement for application-specific safety review</li>
+        </ul></article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div>
+      <div class="footer-brand">Preserve the world.</div>
+      <p>TERRARIUM is an open, deterministic alpha for people who need to
+        understand tool-using agents before trusting them.</p>
+    </div>
+    <nav class="footer-links" aria-label="Project links">
+      <a href="demo/index.html">Demo</a>
+      <a href="https://github.com/Aneesh-Pothuru/terrarium/blob/main/docs/BRIEF.md">Build brief</a>
+      <a href="https://github.com/Aneesh-Pothuru/terrarium/blob/main/docs/USER_JOURNEYS.md">User journeys</a>
+      <a href="https://github.com/Aneesh-Pothuru/terrarium">GitHub</a>
+    </nav>
+  </footer>
+</body>
+</html>

@@ -63,7 +63,12 @@ class TerrariumTests(unittest.TestCase):
             loaded = load_run(path)
             self.assertEqual(loaded.to_dict(), run.to_dict())
             report = render_report([loaded], Path(directory) / "report.html", "test")
-            self.assertIn("World diff", report.read_text(encoding="utf-8"))
+            report_text = report.read_text(encoding="utf-8")
+            self.assertIn("World diff", report_text)
+            self.assertIn('id="scenario-select"', report_text)
+            self.assertIn('id="run-data"', report_text)
+            self.assertIn("../assets/demo.js", report_text)
+            self.assertIn(loaded.run_id, report_text)
 
     def test_three_bundled_recordings_compare_same_task(self) -> None:
         runs = [
